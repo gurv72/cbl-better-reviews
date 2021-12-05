@@ -112,6 +112,11 @@ class Cbl_Better_Reviews {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-cbl-better-reviews-i18n.php';
 
 		/**
+		 * Classes defining the Like and Review objects
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-cbl-better-reviews-like.php';
+
+		/**
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-cbl-better-reviews-admin.php';
@@ -121,6 +126,7 @@ class Cbl_Better_Reviews {
 		 * side of the site.
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-cbl-better-reviews-public.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-cbl-better-reviews-likes-api.php';
 
 		$this->loader = new Cbl_Better_Reviews_Loader();
 
@@ -152,10 +158,9 @@ class Cbl_Better_Reviews {
 	 */
 	private function define_admin_hooks() {
 
-		$plugin_admin = new Cbl_Better_Reviews_Admin( $this->get_plugin_name(), $this->get_version() );
+		$admin = new Cbl_Better_Reviews_Admin( $this->get_plugin_name(), $this->get_version() );
 
-		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
-		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
+		$this->loader->add_action( 'admin_menu', $admin, 'add_settings_page' );
 
 	}
 
@@ -168,11 +173,11 @@ class Cbl_Better_Reviews {
 	 */
 	private function define_public_hooks() {
 
-		$plugin_public = new Cbl_Better_Reviews_Public( $this->get_plugin_name(), $this->get_version() );
+		$public = new Cbl_Better_Reviews_Public( $this->get_plugin_name(), $this->get_version() );
+		$likes_api = new Cbl_Better_Reviews_Likes_Api( $this->get_plugin_name(), $this->get_version() );
 
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
-
+		$this->loader->add_action( 'wp_enqueue_scripts', $public, 'enqueue_scripts' );
+		$this->loader->add_action( 'rest_api_init', $likes_api, 'register_endpoints' );
 	}
 
 	/**
