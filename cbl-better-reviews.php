@@ -15,7 +15,7 @@
  * @wordpress-plugin
  * Plugin Name:       CBL Better Reviews
  * Plugin URI:        https://github.com/TotalOnion/cbl-better-reviews
- * Description:       This is a short description of what the plugin does. It's displayed in the WordPress admin area.
+ * Description:       Plugin to add likes and reviews to posts
  * Version:           1.0.0
  * Author:            Heavyweight
  * Author URI:        https://heavyweightagency.co.uk/

@@ -21,11 +21,11 @@ class Cbl_Better_Reviews_Like {
 	}
 
 	/**
-	 * Fetch the total number of likes for a Post
-	 * 
-	 * @since    1.0.0
-	 * @access   private
-	 */
+	* Fetch the total number of likes for a Post
+	*
+	* @since    1.0.0
+	* @access   private
+	*/
 	private function load() {
 		$this->likes = (int)get_post_meta( $this->post_id, 'cbl-better-reviews_likes', true );
 
@@ -35,14 +35,14 @@ class Cbl_Better_Reviews_Like {
 
 	/**
 	 * Return an associative array containing the ID and total likes
-	 * 
+	 *
 	 * @since    1.0.0
 	 * @access   public
 	 * @return   array
 	 */
 	public function to_array() {
 		$object = new \StdClass;
-		$object->id = ;
+		$object->id = '';
 		$object->likes = $this->likes;
 		return [
 			'id'    => $this->post_id,

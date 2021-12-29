@@ -30,6 +30,14 @@ class Cbl_Better_Reviews_Deactivator {
 	 * @since    1.0.0
 	 */
 	public static function deactivate() {
+		Cbl_Better_Reviews_Deactivator::remove_tables();
+	}
+
+	public static function remove_tables() {
+		global $wpdb;
+
+		$likes_table = $this->wpdb->prefix . 'br_likes';
+		$this->wpdb->query( 'DROP TABLE IF EXISTS ' . $likes_table );
 
 	}
 

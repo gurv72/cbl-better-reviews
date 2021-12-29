@@ -30,13 +30,26 @@ class Cbl_Better_Reviews_Activator {
 	 * @since	1.0.0
 	 */
 	public static function activate() {
-		$this->setup_database();
+		Cbl_Better_Reviews_Activator::setup_database();
 	}
 
-	private function setup_database() {
+	public static function setup_database() {
 		global $wpdb;
 
-		//$table_name = $wpdb->prefix . 'br_rating';
+		// Here we add the table for likes
+
+		$create_statement = "CREATE TABLE " . $wpdb->prefix . 'br_likes' . " (
+			`id` bigint(11) NOT NULL AUTO_INCREMENT,
+			`post_id` int(11) NOT NULL,
+			`value` int(2) NOT NULL,
+			`date_time` datetime NOT NULL,
+			`ip` varchar(40) NOT NULL,
+			`user_id` int(11) NOT NULL DEFAULT '0',
+			PRIMARY KEY (`id`)
+		)";
+
+		$wpdb->query( $create_statement );
+
 		/*
 		We need three tables; rating, rating_type, post_rating_types
 		rating:
@@ -50,7 +63,7 @@ class Cbl_Better_Reviews_Activator {
 		  description
 		  required
 
-		post_rating_types:z
+		post_rating_types:
 		  post_type
 		  rating_type
 		  display_order

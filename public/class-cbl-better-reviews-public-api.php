@@ -94,10 +94,10 @@ class Cbl_Better_Reviews_Public_Api {
 
 		foreach( $post_ids as $post_id ) {
 			$like = new Cbl_Better_Reviews_Like( (int)$post_id );
-			$likes[] = $like->to_array()
+			$likes[] = $like->to_array();
 		}
 
-		return $likes
+		return $likes;
 	}
 
 }

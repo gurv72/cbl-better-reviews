@@ -126,7 +126,7 @@ class Cbl_Better_Reviews {
 		 * side of the site.
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-cbl-better-reviews-public.php';
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-cbl-better-reviews-likes-api.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-cbl-better-reviews-public-api.php';
 
 		$this->loader = new Cbl_Better_Reviews_Loader();
 
@@ -160,7 +160,13 @@ class Cbl_Better_Reviews {
 
 		$admin = new Cbl_Better_Reviews_Admin( $this->get_plugin_name(), $this->get_version() );
 
-		$this->loader->add_action( 'admin_menu', $admin, 'add_settings_page' );
+		$this->loader->add_action( 'admin_menu', $admin, 'add_admin_menu' );
+
+		// Register settings
+		$this->loader->add_action( 'admin_init', $admin, 'register_settings' );
+
+		// Save/Update our plugin options
+		$this->loader->add_action('admin_init', $admin, 'update_settings');
 
 	}
 
@@ -173,11 +179,20 @@ class Cbl_Better_Reviews {
 	 */
 	private function define_public_hooks() {
 
-		$public = new Cbl_Better_Reviews_Public( $this->get_plugin_name(), $this->get_version() );
-		$likes_api = new Cbl_Better_Reviews_Likes_Api( $this->get_plugin_name(), $this->get_version() );
+		$public_plugin = new Cbl_Better_Reviews_Public( $this->get_plugin_name(), $this->get_version() );
+
+		$likes_api = new Cbl_Better_Reviews_Public_Api( $this->get_plugin_name(), $this->get_version() );
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $public, 'enqueue_scripts' );
+
 		$this->loader->add_action( 'rest_api_init', $likes_api, 'register_endpoints' );
+
+		// Add shortcode
+		add_shortcode('brlikes', array($plugin_public, 'br_likes_shortcode'));
+
+		// Add filter to shortcode
+		add_filter('brlikes_filter', array($plugin_public, 'br_likes_filter'), 10, 3);
+
 	}
 
 	/**
@@ -219,5 +234,7 @@ class Cbl_Better_Reviews {
 	public function get_version() {
 		return $this->version;
 	}
+
+
 
 }
