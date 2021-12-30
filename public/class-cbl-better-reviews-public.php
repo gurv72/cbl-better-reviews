@@ -112,7 +112,7 @@ class Cbl_Better_Reviews_Public {
 	*/
 	public function brlikes_filter($id) {
 		$new_output = '';
-		$average_rating = $this->get_average_rating($id);
+		$no_of_likes = $this->get_number_likes($id);
 
 		// This will return the html for the br_likes block
   		$new_output .= '<div>';
@@ -124,6 +124,13 @@ class Cbl_Better_Reviews_Public {
 				<input type="submit">
 			</form>
 		';
+
+		if ($no_of_likes > 0) {
+			$new_output .= '<div>';
+			$new_output .= 'Number of likes ';
+			$new_output .= $no_of_likes;
+			$new_output .= '</div>';
+		}
 
 		$new_output .= '</div>';
 
@@ -152,7 +159,7 @@ class Cbl_Better_Reviews_Public {
 		if ($average_rating > 0) {
 			$new_output .= '<div>';
 			$new_output .= 'Average rating for this page<br />';
-			$new_output .= $this->get_average_rating($id);
+			$new_output .= $this->get_number_likes($id);
 			$new_output .= '</div>';
 		}
 
@@ -213,6 +220,24 @@ class Cbl_Better_Reviews_Public {
 		}
 	}
 
+	/**
+	* Br_likes update like
+	*/
+	public function get_number_likes($post_id) {
+		global $wpdb;
+
+		$posts = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT id FROM {$wpdb->prefix}br_likes
+				WHERE post_id = %d",
+				$post_id
+			)
+		);
+
+		$post_count = count($posts);
+
+		return $post_count;
+	}
 	/**
 	* Br_likes update like
 	*/
