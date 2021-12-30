@@ -125,6 +125,15 @@ class Cbl_Better_Reviews_Public {
 			</form>
 		';
 
+		$new_output .= '
+			<form name="" action="/" method="post">
+				<label>Unlike the post here</label>
+				<input type="hidden" name="post_id" value="'.$id.'">
+				<input type="hidden" name="task" value="unlike">
+				<input type="submit">
+			</form>
+		';
+
 		if ($no_of_likes > 0) {
 			$new_output .= '<div>';
 			$new_output .= 'Number of likes ';
@@ -189,6 +198,15 @@ class Cbl_Better_Reviews_Public {
 					"INSERT INTO {$wpdb->prefix}br_likes (`post_id`,`date_time`, `ip`)
 					VALUES (%d, %s, %s)",
 					$post_id, $date, $ip_address
+				)
+			);
+		}
+
+		if ( $task == "unlike" ) {
+			$success = $wpdb->query(
+				$wpdb->prepare(
+					"DELETE from {$wpdb->prefix}br_likes WHERE post_id = '%s' LIMIT 1",
+					$post_id
 				)
 			);
 		}
