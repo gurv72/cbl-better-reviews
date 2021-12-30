@@ -89,10 +89,52 @@ class Cbl_Better_Reviews_Public {
 	}
 
 	/**
+	* Br_ratings shortcode
+	*/
+	public function brratting_shortcode($atts = []) {
+		$type_array = array();
+		$output = '';
+		$post_id = get_the_ID();
+
+		// Get the attributes, not sure what we need here yet
+		$attributes = shortcode_atts([
+			'id' => null
+		], $atts, 'brratings');
+
+		// Return likes code
+		return apply_filters('brratings_filter', $post_id);
+
+	}
+
+	/**
 	* Br_likes filter to modify html
 	* called via apply_filters('brlikes_filter');
 	*/
 	public function brlikes_filter($id) {
+		$new_output = '';
+		$average_rating = $this->get_average_rating($id);
+
+		// This will return the html for the br_likes block
+  		$new_output .= '<div>';
+		$new_output .= '
+			<form name="" action="/" method="post">
+				<label>Like the post here</label>
+				<input type="hidden" name="post_id" value="'.$id.'">
+				<input type="hidden" name="task" value="like">
+				<input type="submit">
+			</form>
+		';
+
+		$new_output .= '</div>';
+
+		return $new_output;
+	}
+
+	/**
+	* Br_rating filter to modify html
+	* called via apply_filters('brlikes_filter');
+	*/
+	public function brratings_filter($id) {
 		$new_output = '';
 		$average_rating = $this->get_average_rating($id);
 
@@ -128,6 +170,31 @@ class Cbl_Better_Reviews_Public {
 
 		// Get the variables passed in by form
 		$post_id = (int)$_REQUEST['post_id'];
+		$task = $_REQUEST['task'];
+
+		// Set the variables
+		$ip_address = $this->br_likes_ipaddress();
+		$date = date( 'Y-m-d H:i:s' );
+
+		if ( $task == "like" ) {
+			$success = $wpdb->query(
+				$wpdb->prepare(
+					"INSERT INTO {$wpdb->prefix}br_likes (`post_id`,`date_time`, `ip`)
+					VALUES (%d, %s, %s)",
+					$post_id, $date, $ip_address
+				)
+			);
+		}
+	}
+
+	/**
+	* Br_likes update like
+	*/
+	public function brratings_update() {
+		global $wpdb;
+
+		// Get the variables passed in by form
+		$post_id = (int)$_REQUEST['post_id'];
 		$rating_value = (int)$_REQUEST['rating_value'];
 		$task = $_REQUEST['task'];
 
@@ -138,7 +205,7 @@ class Cbl_Better_Reviews_Public {
 		if ( $task == "like" ) {
 			$success = $wpdb->query(
 				$wpdb->prepare(
-					"INSERT INTO {$wpdb->prefix}br_likes (`post_id`, `value`,`date_time`, `ip`)
+					"INSERT INTO {$wpdb->prefix}br_ratings (`post_id`, `value`,`date_time`, `ip`)
 					VALUES (%d, %d, %s, %s)",
 					$post_id, $rating_value, $date, $ip_address
 				)

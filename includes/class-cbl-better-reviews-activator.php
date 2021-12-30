@@ -37,8 +37,17 @@ class Cbl_Better_Reviews_Activator {
 		global $wpdb;
 
 		// Here we add the table for likes
-
 		$create_statement = "CREATE TABLE " . $wpdb->prefix . 'br_likes' . " (
+			`id` bigint(11) NOT NULL AUTO_INCREMENT,
+			`post_id` int(11) NOT NULL,
+			`date_time` datetime NOT NULL,
+			`ip` varchar(40) NOT NULL,
+			PRIMARY KEY (`id`)
+		)";
+
+		$wpdb->query( $create_statement );
+
+		/* $create_statement = "CREATE TABLE " . $wpdb->prefix . 'br_likes' . " (
 			`id` bigint(11) NOT NULL AUTO_INCREMENT,
 			`post_id` int(11) NOT NULL,
 			`value` int(2) NOT NULL,
@@ -48,7 +57,7 @@ class Cbl_Better_Reviews_Activator {
 			PRIMARY KEY (`id`)
 		)";
 
-		$wpdb->query( $create_statement );
+		$wpdb->query( $create_statement ); */
 
 		/*
 		We need three tables; rating, rating_type, post_rating_types
