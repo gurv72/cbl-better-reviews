@@ -42,6 +42,4 @@ class Cbl_Better_Reviews_i18n {
 
 	}
 
-
-
 }

@@ -73,30 +73,47 @@ class Cbl_Better_Reviews_Public {
 	/**
 	* Br_likes shortcode
 	*/
-	public function br_likes_shortcode($atts = []) {
+	public function brlikes_shortcode($atts = []) {
 		$type_array = array();
 		$output = '';
+		$post_id = get_the_ID();
 
-		// Get the attributes
+		// Get the attributes, not sure what we need here yet
 		$attributes = shortcode_atts([
 			'id' => null
 		], $atts, 'brlikes');
 
-		// Return the bazaar voice code if we have an id
-		if (!empty($attributes['id'])) {
-			return apply_filters('brlikes_filter', $attributes['id']);
-		}
+		// Return likes code
+		return apply_filters('brlikes_filter', $post_id);
 
 	}
 
 	/**
 	* Br_likes filter to modify html
-	* called via apply_filters('brlikes_filter', id='1234');
+	* called via apply_filters('brlikes_filter');
 	*/
-	public function brlikes_filter($id, $types, $title) {
+	public function brlikes_filter($id) {
+		$new_output = '';
+		$average_rating = $this->get_average_rating($id);
 
 		// This will return the html for the br_likes block
   		$new_output .= '<div>';
+		$new_output .= '
+			<form name="" action="/" method="post">
+				<label>Add your rating here</label>
+				<input type="hidden" name="post_id" value="'.$id.'">
+				<input type="hidden" name="task" value="like">
+				<input type="text" name="rating_value" value="">
+				<input type="submit">
+			</form>
+		';
+		if ($average_rating > 0) {
+			$new_output .= '<div>';
+			$new_output .= 'Average rating for this page<br />';
+			$new_output .= $this->get_average_rating($id);
+			$new_output .= '</div>';
+		}
+
 		$new_output .= '</div>';
 
 		return $new_output;
@@ -106,39 +123,58 @@ class Cbl_Better_Reviews_Public {
 	/**
 	* Br_likes update like
 	*/
-	public function brlikes_update($id, $types, $title) {
+	public function brlikes_update() {
+		global $wpdb;
 
+		// Get the variables passed in by form
 		$post_id = (int)$_REQUEST['post_id'];
+		$rating_value = (int)$_REQUEST['rating_value'];
 		$task = $_REQUEST['task'];
-		$ip_address = $this->br_likes_ipaddress();
 
-		$current_user = wp_get_current_user();
-		$user_id = (int)$current_user->ID;
+		// Set the variables
+		$ip_address = $this->br_likes_ipaddress();
+		$date = date( 'Y-m-d H:i:s' );
 
 		if ( $task == "like" ) {
 			$success = $wpdb->query(
-						$wpdb->prepare(
-							"UPDATE {$wpdb->prefix}br_likes SET
-							value = value + 1,
-							date_time = '" . date( 'Y-m-d H:i:s' ) . "'
-							WHERE post_id = %d AND ip = %s",
-							$post_id, $ip_address
-						)
-					);
-		} else {
-				$success = $wpdb->query(
-							$wpdb->prepare(
-								"UPDATE {$wpdb->prefix}br_likes SET
-								value = value -1,
-								date_time = '" . date( 'Y-m-d H:i:s' ) . "',
-								user_id = %d WHERE ip = %s",
-								$post_id, $wti_ip_address
-							)
-						);
+				$wpdb->prepare(
+					"INSERT INTO {$wpdb->prefix}br_likes (`post_id`, `value`,`date_time`, `ip`)
+					VALUES (%d, %d, %s, %s)",
+					$post_id, $rating_value, $date, $ip_address
+				)
+			);
 		}
 	}
 
-	public function br_likes_ipaddress()) {
+	/**
+	* Br_likes update like
+	*/
+	public function get_average_rating($post_id) {
+		global $wpdb;
+
+		$posts = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT value FROM {$wpdb->prefix}br_likes
+				WHERE post_id = %d",
+				$post_id
+			)
+		);
+
+		$post_count = count($posts);
+
+		$value = 0;
+		foreach ($posts as $post) {
+			$value = $value+$post->value;
+		}
+
+		if ($value > 0) {
+			return round($value/$post_count);
+		}
+
+		return 0;
+	}
+
+	public function br_likes_ipaddress() {
 		if (getenv('HTTP_CLIENT_IP')) {
 			$ip = getenv('HTTP_CLIENT_IP');
 		} elseif (getenv('HTTP_X_FORWARDED_FOR')) {

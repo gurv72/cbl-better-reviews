@@ -131,7 +131,7 @@ class Cbl_Better_Reviews_Admin {
 
 		add_settings_section(
 			$settings_section,
- 			__( 'Post Types that can have a review', 'posts_can_receive_reviews' ),
+ 			__( 'Post Types that can have a review', $this->plugin_name),
  			'',
  			$section_group
 		);
@@ -202,7 +202,7 @@ class Cbl_Better_Reviews_Admin {
 				$post_section_name,
 				array(
 					'type'         => 'string',
-					'description'  => 'Posts which can receive reviews',
+					'description'  => __( 'Post Types that can have a review', $this->plugin_name),
 					'show_in_rest' => false,
 					'default'      => '',
 				)
@@ -266,7 +266,7 @@ class Cbl_Better_Reviews_Admin {
 
 		// These all need to be translatable, not sure this is the best way of doing this but will revisit
 		$fields = array(
-				'Review Label'=>'review_label',
+				__( 'Review Label', $this->plugin_name)=>'review_label',
 				'Average Score Label'=>'average_score_label',
 				'CTA Label'=>'cta_label',
 				'Subtype Quality'=>'subtype_quality',

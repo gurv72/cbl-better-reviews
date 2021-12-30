@@ -179,19 +179,22 @@ class Cbl_Better_Reviews {
 	 */
 	private function define_public_hooks() {
 
-		$public_plugin = new Cbl_Better_Reviews_Public( $this->get_plugin_name(), $this->get_version() );
+		$plugin_public = new Cbl_Better_Reviews_Public( $this->get_plugin_name(), $this->get_version() );
 
 		$likes_api = new Cbl_Better_Reviews_Public_Api( $this->get_plugin_name(), $this->get_version() );
 
-		$this->loader->add_action( 'wp_enqueue_scripts', $public, 'enqueue_scripts' );
+		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 
 		$this->loader->add_action( 'rest_api_init', $likes_api, 'register_endpoints' );
 
 		// Add shortcode
-		add_shortcode('brlikes', array($plugin_public, 'br_likes_shortcode'));
+		add_shortcode('brlikes', array($plugin_public, 'brlikes_shortcode'));
 
 		// Add filter to shortcode
-		add_filter('brlikes_filter', array($plugin_public, 'br_likes_filter'), 10, 3);
+		add_filter('brlikes_filter', array($plugin_public, 'brlikes_filter'), 10);
+
+		// Define function to update likes
+		$this->loader->add_action( 'init', $plugin_public, 'brlikes_update', 10 );
 
 	}
 
@@ -234,7 +237,5 @@ class Cbl_Better_Reviews {
 	public function get_version() {
 		return $this->version;
 	}
-
-
 
 }
