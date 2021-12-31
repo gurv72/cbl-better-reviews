@@ -36,8 +36,8 @@ class Cbl_Better_Reviews_Activator {
 	public static function setup_database() {
 		global $wpdb;
 
-		// Here we add the table for likes
-		$create_statement = "CREATE TABLE " . $wpdb->prefix . 'br_likes' . " (
+		// Likes table
+		$create_likes_statement = "CREATE TABLE " . $wpdb->prefix . 'br_likes' . " (
 			`id` bigint(11) NOT NULL AUTO_INCREMENT,
 			`post_id` int(11) NOT NULL,
 			`date_time` datetime NOT NULL,
@@ -45,19 +45,41 @@ class Cbl_Better_Reviews_Activator {
 			PRIMARY KEY (`id`)
 		)";
 
-		$wpdb->query( $create_statement );
+		$wpdb->query( $create_likes_statement );
 
-		/* $create_statement = "CREATE TABLE " . $wpdb->prefix . 'br_likes' . " (
+		// Rating table
+		$create_ratings_statement = "CREATE TABLE " . $wpdb->prefix . 'br_ratings' . " (
 			`id` bigint(11) NOT NULL AUTO_INCREMENT,
 			`post_id` int(11) NOT NULL,
-			`value` int(2) NOT NULL,
+			`rating_type_id` int(11) NOT NULL,
+			`score` int(2) NOT NULL,
 			`date_time` datetime NOT NULL,
-			`ip` varchar(40) NOT NULL,
-			`user_id` int(11) NOT NULL DEFAULT '0',
 			PRIMARY KEY (`id`)
 		)";
 
-		$wpdb->query( $create_statement ); */
+		$wpdb->query( $create_ratings_statement );
+
+		// Rating type table
+		$create_ratings_type_statement = "CREATE TABLE " . $wpdb->prefix . 'br_rating_type' . " (
+			`id` bigint(11) NOT NULL AUTO_INCREMENT,
+			`label` varchar(40) NULL,
+			`description` varchar(40) NULL,
+			`required` varchar(40) NULL,
+			PRIMARY KEY (`id`)
+		)";
+
+		$wpdb->query( $create_ratings_type_statement );
+
+		// Rating type table
+		$create_post_ratings_type_statement = "CREATE TABLE " . $wpdb->prefix . 'br_post_rating_type' . " (
+			`id` bigint(11) NOT NULL AUTO_INCREMENT,
+			`post_type` varchar(40) NULL,
+			`rating_type` varchar(40) NULL,
+			`display_order` varchar(40) NULL,
+			PRIMARY KEY (`id`)
+		)";
+
+		$wpdb->query( $create_post_ratings_type_statement );
 
 		/*
 		We need three tables; rating, rating_type, post_rating_types

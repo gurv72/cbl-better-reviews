@@ -160,7 +160,7 @@ class Cbl_Better_Reviews_Public {
 			<form name="" action="/" method="post">
 				<label>Add your rating here</label>
 				<input type="hidden" name="post_id" value="'.$id.'">
-				<input type="hidden" name="task" value="like">
+				<input type="hidden" name="task" value="rate">
 				<input type="text" name="rating_value" value="">
 				<input type="submit">
 			</form>
@@ -168,7 +168,7 @@ class Cbl_Better_Reviews_Public {
 		if ($average_rating > 0) {
 			$new_output .= '<div>';
 			$new_output .= 'Average rating for this page<br />';
-			$new_output .= $this->get_number_likes($id);
+			$new_output .= $this->get_average_rating($id);
 			$new_output .= '</div>';
 		}
 
@@ -185,56 +185,72 @@ class Cbl_Better_Reviews_Public {
 		global $wpdb;
 
 		// Get the variables passed in by form
-		$post_id = (int)$_REQUEST['post_id'];
-		$task = $_REQUEST['task'];
+		if (isset($_REQUEST['post_id'])) {
+			$post_id = (int)$_REQUEST['post_id'];
+		}
+
+		if (isset($_REQUEST['task'])) {
+			$task = $_REQUEST['task'];
+		}
 
 		// Set the variables
 		$ip_address = $this->br_likes_ipaddress();
 		$date = date( 'Y-m-d H:i:s' );
 
-		if ( $task == "like" ) {
-			$success = $wpdb->query(
-				$wpdb->prepare(
-					"INSERT INTO {$wpdb->prefix}br_likes (`post_id`,`date_time`, `ip`)
-					VALUES (%d, %s, %s)",
-					$post_id, $date, $ip_address
-				)
-			);
-		}
+		if (!empty($task)) {
+			if ( $task == "like" ) {
+				$success = $wpdb->query(
+					$wpdb->prepare(
+						"INSERT INTO {$wpdb->prefix}br_likes (`post_id`,`date_time`, `ip`)
+						VALUES (%d, %s, %s)",
+						$post_id, $date, $ip_address
+					)
+				);
+			}
 
-		if ( $task == "unlike" ) {
-			$success = $wpdb->query(
-				$wpdb->prepare(
-					"DELETE from {$wpdb->prefix}br_likes WHERE post_id = '%s' LIMIT 1",
-					$post_id
-				)
-			);
+			if ( $task == "unlike" ) {
+				$success = $wpdb->query(
+					$wpdb->prepare(
+						"DELETE from {$wpdb->prefix}br_likes WHERE post_id = '%s' LIMIT 1",
+						$post_id
+					)
+				);
+			}
 		}
 	}
 
 	/**
-	* Br_likes update like
+	* Br_ratings update like
 	*/
 	public function brratings_update() {
 		global $wpdb;
 
 		// Get the variables passed in by form
-		$post_id = (int)$_REQUEST['post_id'];
-		$rating_value = (int)$_REQUEST['rating_value'];
-		$task = $_REQUEST['task'];
+		if (isset($_REQUEST['post_id'])) {
+			$post_id = (int)$_REQUEST['post_id'];
+		}
+
+		if (isset($_REQUEST['rating_value'])) {
+			$rating_value = (int)$_REQUEST['rating_value'];
+		}
+
+		if (isset($_REQUEST['task'])) {
+			$task = $_REQUEST['task'];
+		}
 
 		// Set the variables
-		$ip_address = $this->br_likes_ipaddress();
 		$date = date( 'Y-m-d H:i:s' );
 
-		if ( $task == "like" ) {
-			$success = $wpdb->query(
-				$wpdb->prepare(
-					"INSERT INTO {$wpdb->prefix}br_ratings (`post_id`, `value`,`date_time`, `ip`)
-					VALUES (%d, %d, %s, %s)",
-					$post_id, $rating_value, $date, $ip_address
-				)
-			);
+		if (!empty($task)) {
+			if ( $task == "rate" ) {
+				$success = $wpdb->query(
+					$wpdb->prepare(
+						"INSERT INTO {$wpdb->prefix}br_ratings (`post_id`, `score`,`date_time`)
+						VALUES (%d, %d, %s)",
+						$post_id, $rating_value, $date
+					)
+				);
+			}
 		}
 	}
 
@@ -264,7 +280,7 @@ class Cbl_Better_Reviews_Public {
 
 		$posts = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT value FROM {$wpdb->prefix}br_likes
+				"SELECT score FROM {$wpdb->prefix}br_ratings
 				WHERE post_id = %d",
 				$post_id
 			)
@@ -272,13 +288,13 @@ class Cbl_Better_Reviews_Public {
 
 		$post_count = count($posts);
 
-		$value = 0;
+		$score = 0;
 		foreach ($posts as $post) {
-			$value = $value+$post->value;
+			$score = $score+$post->score;
 		}
 
-		if ($value > 0) {
-			return round($value/$post_count);
+		if ($score > 0) {
+			return round($score/$post_count);
 		}
 
 		return 0;

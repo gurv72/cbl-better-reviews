@@ -39,6 +39,15 @@ class Cbl_Better_Reviews_Deactivator {
 		$likes_table = $wpdb->prefix . 'br_likes';
 		$wpdb->query( 'DROP TABLE IF EXISTS ' . $likes_table );
 
+		$ratings_table = $wpdb->prefix . 'br_ratings';
+		$wpdb->query( 'DROP TABLE IF EXISTS ' . $ratings_table );
+
+		$type_table = $wpdb->prefix . 'br_rating_type';
+		$wpdb->query( 'DROP TABLE IF EXISTS ' . $type_table );
+
+		$post_type_table = $wpdb->prefix . 'br_post_rating_type';
+		$wpdb->query( 'DROP TABLE IF EXISTS ' . $post_type_table );
+
 	}
 
 }

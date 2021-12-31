@@ -187,6 +187,8 @@ class Cbl_Better_Reviews {
 
 		$this->loader->add_action( 'rest_api_init', $likes_api, 'register_endpoints' );
 
+		// Likes
+
 		// Add shortcode
 		add_shortcode('brlikes', array($plugin_public, 'brlikes_shortcode'));
 
@@ -195,6 +197,17 @@ class Cbl_Better_Reviews {
 
 		// Define function to update likes
 		$this->loader->add_action( 'init', $plugin_public, 'brlikes_update', 10 );
+
+		// Ratings
+
+		// Add shortcode
+		add_shortcode('brratings', array($plugin_public, 'brratting_shortcode'));
+
+		// Add filter to shortcode
+		add_filter('brratings_filter', array($plugin_public, 'brratings_filter'), 10);
+
+		// Define function to update likes
+		$this->loader->add_action( 'init', $plugin_public, 'brratings_update', 10 );
 
 	}
 
