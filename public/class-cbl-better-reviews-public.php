@@ -89,24 +89,6 @@ class Cbl_Better_Reviews_Public {
 	}
 
 	/**
-	* Br_ratings shortcode
-	*/
-	public function brratting_shortcode($atts = []) {
-		$type_array = array();
-		$output = '';
-		$post_id = get_the_ID();
-
-		// Get the attributes, not sure what we need here yet
-		$attributes = shortcode_atts([
-			'id' => null
-		], $atts, 'brratings');
-
-		// Return likes code
-		return apply_filters('brratings_filter', $post_id);
-
-	}
-
-	/**
 	* Br_likes filter to modify html
 	* called via apply_filters('brlikes_filter');
 	*/
@@ -145,38 +127,6 @@ class Cbl_Better_Reviews_Public {
 
 		return $new_output;
 	}
-
-	/**
-	* Br_rating filter to modify html
-	* called via apply_filters('brlikes_filter');
-	*/
-	public function brratings_filter($id) {
-		$new_output = '';
-		$average_rating = $this->get_average_rating($id);
-
-		// This will return the html for the br_likes block
-  		$new_output .= '<div>';
-		$new_output .= '
-			<form name="" action="/" method="post">
-				<label>Add your rating here</label>
-				<input type="hidden" name="post_id" value="'.$id.'">
-				<input type="hidden" name="task" value="rate">
-				<input type="text" name="rating_value" value="">
-				<input type="submit">
-			</form>
-		';
-		if ($average_rating > 0) {
-			$new_output .= '<div>';
-			$new_output .= 'Average rating for this page<br />';
-			$new_output .= $this->get_average_rating($id);
-			$new_output .= '</div>';
-		}
-
-		$new_output .= '</div>';
-
-		return $new_output;
-	}
-
 
 	/**
 	* Br_likes update like
@@ -220,42 +170,7 @@ class Cbl_Better_Reviews_Public {
 	}
 
 	/**
-	* Br_ratings update like
-	*/
-	public function brratings_update() {
-		global $wpdb;
-
-		// Get the variables passed in by form
-		if (isset($_REQUEST['post_id'])) {
-			$post_id = (int)$_REQUEST['post_id'];
-		}
-
-		if (isset($_REQUEST['rating_value'])) {
-			$rating_value = (int)$_REQUEST['rating_value'];
-		}
-
-		if (isset($_REQUEST['task'])) {
-			$task = $_REQUEST['task'];
-		}
-
-		// Set the variables
-		$date = date( 'Y-m-d H:i:s' );
-
-		if (!empty($task)) {
-			if ( $task == "rate" ) {
-				$success = $wpdb->query(
-					$wpdb->prepare(
-						"INSERT INTO {$wpdb->prefix}br_ratings (`post_id`, `score`,`date_time`)
-						VALUES (%d, %d, %s)",
-						$post_id, $rating_value, $date
-					)
-				);
-			}
-		}
-	}
-
-	/**
-	* Br_likes update like
+	* Br_likes get numer of likes
 	*/
 	public function get_number_likes($post_id) {
 		global $wpdb;
@@ -272,8 +187,153 @@ class Cbl_Better_Reviews_Public {
 
 		return $post_count;
 	}
+
 	/**
-	* Br_likes update like
+	* Br_ratings shortcode
+	*/
+	public function brratting_shortcode($atts = []) {
+		$type_array = array();
+		$output = '';
+		$post_id = get_the_ID();
+
+		// Get the attributes, not sure what we need here yet
+		$attributes = shortcode_atts([
+			'id' => null
+		], $atts, 'brratings');
+
+		// Return likes code
+		return apply_filters('brratings_filter', $post_id);
+
+	}
+
+	/**
+	* Br_rating filter to modify html
+	* called via apply_filters('brratings_filter');
+	*/
+	public function brratings_filter($id) {
+		$new_output = '';
+		$average_rating = $this->get_average_rating($id);
+		$post_id = get_the_ID();
+		$post_type = get_post_type($post_id);
+		$section_name = $this->plugin_name. '_posts_settings';
+		$options = get_option($section_name);
+
+		// If the shortcode is allowed on this posttype
+		if ($options[$post_type] == 'on') {
+
+			// Get the settings for the postype
+			$options_type = $this->plugin_name.'_'.$post_type;
+			$option_settings = get_option($options_type);
+
+		} else {
+			echo 'You cannot use this shortcode on this page';
+		}
+
+
+		// This will return the html for the br_likes block
+		$new_output .= '<div>';
+		$new_output .= '
+
+			<h2>'.$option_settings['review_label'].'</h2>
+			<form name="" action="/" method="post">
+				<div style="margin-bottom:20px;">
+				<label>'.$option_settings['subtype_quality'].'</label>
+				<input type="hidden" name="post_id" value="'.$id.'">
+				<input type="hidden" name="task" value="rate">
+				<input type="text" name="quality_value" value="">
+				</div>
+
+				<div style="margin-bottom:20px;">
+				<label>'.$option_settings['subtype_value'].'</label>
+				<input type="hidden" name="post_id" value="'.$id.'">
+				<input type="hidden" name="task" value="rate">
+				<input type="text" name="value_value" value="">
+				</div>
+
+				<div style="margin-bottom:20px;">
+				<label>'.$option_settings['subtype_taste'].'</label>
+				<input type="hidden" name="post_id" value="'.$id.'">
+				<input type="hidden" name="task" value="rate">
+				<input type="text" name="taste_value" value="">
+				</div>
+
+				<input type="submit">
+			</form>
+
+		';
+		if ($average_rating > 0) {
+			$new_output .= '<div>';
+			$new_output .= $option_settings['average_score_label'].'<br />';
+			$new_output .= $this->get_average_rating($id);
+			$new_output .= '</div>';
+		}
+
+		$new_output .= '</div>';
+
+		return $new_output;
+	}
+
+	/**
+	* Br_ratings update rating
+	*/
+	public function brratings_update() {
+		global $wpdb;
+
+		// Get the variables passed in by form
+		if (isset($_REQUEST['post_id'])) {
+			$post_id = (int)$_REQUEST['post_id'];
+		}
+
+		if (isset($_REQUEST['quality_value'])) {
+			$quality_value = (int)$_REQUEST['quality_value'];
+		}
+
+		if (isset($_REQUEST['value_value'])) {
+			$value_value = (int)$_REQUEST['value_value'];
+		}
+
+		if (isset($_REQUEST['taste_value'])) {
+			$taste_value = (int)$_REQUEST['taste_value'];
+		}
+
+		if (isset($_REQUEST['task'])) {
+			$task = $_REQUEST['task'];
+		}
+
+		// Set the variables
+		$date = date( 'Y-m-d H:i:s' );
+
+		if (!empty($task)) {
+			if ( $task == "rate" ) {
+				$success = $wpdb->query(
+					$wpdb->prepare(
+						"INSERT INTO {$wpdb->prefix}br_ratings (`post_id`, `score`, `rating_type_id`, `date_time`)
+						VALUES (%d, %d, %d, %s)",
+						$post_id, $quality_value, 1, $date
+					)
+				);
+
+				$success = $wpdb->query(
+					$wpdb->prepare(
+						"INSERT INTO {$wpdb->prefix}br_ratings (`post_id`, `score`, `rating_type_id`, `date_time`)
+						VALUES (%d, %d, %d, %s)",
+						$post_id, $value_value, 2, $date
+					)
+				);
+
+				$success = $wpdb->query(
+					$wpdb->prepare(
+						"INSERT INTO {$wpdb->prefix}br_ratings (`post_id`, `score`, `rating_type_id`, `date_time`)
+						VALUES (%d, %d, %d, %s)",
+						$post_id, $taste_value, 3, $date
+					)
+				);
+			}
+		}
+	}
+
+	/**
+	* Br_likes get average rating
 	*/
 	public function get_average_rating($post_id) {
 		global $wpdb;

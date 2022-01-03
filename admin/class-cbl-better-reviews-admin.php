@@ -269,9 +269,9 @@ class Cbl_Better_Reviews_Admin {
 				__( 'Review Label', $this->plugin_name)=>'review_label',
 				'Average Score Label'=>'average_score_label',
 				'CTA Label'=>'cta_label',
-				'Subtype Quality'=>'subtype_quality',
-				'Subtype Value'=>'subtype_value',
-				'Subtype Taste'=>'subtype_taste'
+				'Subtype Quality Label'=>'subtype_quality',
+				'Subtype Value Label'=>'subtype_value',
+				'Subtype Taste Label'=>'subtype_taste'
 			);
 
 		return $fields;
