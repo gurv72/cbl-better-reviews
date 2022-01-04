@@ -243,7 +243,13 @@ class Cbl_Better_Reviews_Admin {
 	*/
 	public function render_post_fields($array) {
 		$section_name = $array[0];
+		$type = $array[1];
 		$options = get_option($section_name);
+
+		if (isset($options['subtype'])) {
+			$subtypes = $options['subtype'];
+		}
+
 		$fields = $this->get_post_fields();
 
 		foreach ($fields as $field_name => $field_value) {
@@ -257,6 +263,8 @@ class Cbl_Better_Reviews_Admin {
 			include __DIR__ . '/partials/cbl-better-reviews-text.php';
 		}
 
+		include __DIR__ . '/partials/cbl-better-reviews-list.php';
+
 	}
 
 	/**
@@ -265,14 +273,12 @@ class Cbl_Better_Reviews_Admin {
 	private function get_post_fields() {
 
 		// These all need to be translatable, not sure this is the best way of doing this but will revisit
+
 		$fields = array(
-				__( 'Review Label', $this->plugin_name)=>'review_label',
-				'Average Score Label'=>'average_score_label',
-				'CTA Label'=>'cta_label',
-				'Subtype Quality Label'=>'subtype_quality',
-				'Subtype Value Label'=>'subtype_value',
-				'Subtype Taste Label'=>'subtype_taste'
-			);
+				__( 'Review Label', $this->plugin_name) => 'review_label',
+				__( 'Average Score Label', $this->plugin_name) => 'average_score_label',
+				__( 'CTA Label', $this->plugin_name) => 'cta_label'
+		);
 
 		return $fields;
 	}
