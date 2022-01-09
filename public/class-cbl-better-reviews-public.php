@@ -149,12 +149,12 @@ class Cbl_Better_Reviews_Public {
 		$new_output = '';
 		$no_of_likes = $this->get_number_likes($id);
 
-		if ($no_of_likes > 0) {
+		//if ($no_of_likes > 0) {
 			$new_output .= 'Number of likes ';
 			$new_output .= '<div id="br-likes-total">';
 			$new_output .= $no_of_likes;
 			$new_output .= '</div>';
-		}
+		//}
 
 		$new_output .= '</div>';
 

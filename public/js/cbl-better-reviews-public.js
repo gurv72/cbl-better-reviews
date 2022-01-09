@@ -1,14 +1,29 @@
 (function( ) {
 	'use strict';
 
-	var postid = document.getElementById('br-likes-postid');
+	var postId = document.getElementById('br-likes-postid');
 	var button = document.getElementById("br-likes-likebutton");
-	var liketotal = document.getElementById("br-likes-total");
+	var likeTotal = document.getElementById("br-likes-total");
+
+	var likedArray;
+
+	//localStorage.clear();
+
+	if (localStorage.getItem('likedPosts')) {
+  		likedArray = JSON.parse(localStorage.getItem('likedPosts'))
+	} else {
+  		likedArray = []
+	}
+
+	if (likedArray.indexOf(postId.value) !== -1) {
+		button.innerHTML = 'Unlike';
+		button.disabled = true;
+	}
 
 	// Click the button
 	button.addEventListener("click",function(e){
 		var task = button.getAttribute("data-task");
-		var data = 'task='+task+'&post_id='+postid.value;
+		var data = 'task='+task+'&post_id='+postId.value;
 
 		var request = new XMLHttpRequest();
 		request.open('POST', '/', true);
@@ -25,11 +40,16 @@
 				button.innerHTML = 'Unlike';
 				update_like_total();
 				button.setAttribute('data-task', 'unlike');
-			} else {
+
+				if (likedArray.indexOf(postId.value) == -1) {
+					likedArray.push(postId.value);
+  					localStorage.setItem('likedPosts', JSON.stringify(likedArray));
+				}
+			} /* else {
 				button.innerHTML = 'Like';
 				update_like_total();
 				button.setAttribute('data-task', 'like');
-			}
+			} */
 
         }};
 
@@ -37,8 +57,8 @@
 
 	function update_like_total() {
 
-		var postid = document.getElementById('br-likes-postid');
-		var likedata = 'task=likedata&post_id='+postid.value;
+		var postId = document.getElementById('br-likes-postid');
+		var likeData = 'task=likedata&post_id='+postId.value;
 
 		// This is to update the like div, will need to be changed
 		var datarequest = new XMLHttpRequest();
@@ -46,10 +66,10 @@
 		datarequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
 
 		// Send the data
-		var datastatus = datarequest.send(likedata);
+		var datastatus = datarequest.send(likeData);
 		datarequest.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
-			liketotal.innerHTML = datarequest.response;
+			likeTotal.innerHTML = datarequest.response;
 			console.log(datarequest.response);
 
 		}};
