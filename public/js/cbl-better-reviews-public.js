@@ -20,6 +20,8 @@
 		button.disabled = true;
 	}
 
+	console.log(likedArray);
+
 	// Click the button
 	button.addEventListener("click",function(e){
 		var task = button.getAttribute("data-task");
