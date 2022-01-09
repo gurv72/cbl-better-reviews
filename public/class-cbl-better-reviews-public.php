@@ -89,6 +89,30 @@ class Cbl_Better_Reviews_Public {
 	}
 
 	/**
+	* Br_likes totoal shortcode
+	*/
+	public function brlikestotal_shortcode($atts = []) {
+		$type_array = array();
+		$output = '';
+		$post_id = get_the_ID();
+
+		// Get the attributes, if id not passed in use current post id
+		$attributes = shortcode_atts([
+			'id' => null
+		], $atts, 'brlikestotal');
+
+		if (empty($attributes['id'])) {
+			$id = $post_id;
+		} else {
+			$id = $attributes['id'];
+		}
+
+		// Return likes code
+		return apply_filters('brlikestotal_filter', $id);
+
+	}
+
+	/**
 	* Br_likes filter to modify html
 	* called via apply_filters('brlikes_filter');
 	*/
@@ -99,25 +123,34 @@ class Cbl_Better_Reviews_Public {
 		// This will return the html for the br_likes block
   		$new_output .= '<div>';
 		$new_output .= '
-			<form name="" action="/" method="post">
-				<label>Like the post here</label>
-				<input type="hidden" name="post_id" value="'.$id.'">
-				<input type="hidden" name="task" value="like">
-				<input type="submit">
-			</form>
+			<label>Like the post here</label>
+			<input type="hidden" id="br-likes-postid" name="post_id" value="'.$id.'">
+			<button id="br-likes-likebutton" data-id="'.$id.'" data-task="like">Like</button>
+
 		';
 
-		$new_output .= '
-			<form name="" action="/" method="post">
-				<label>Unlike the post here</label>
-				<input type="hidden" name="post_id" value="'.$id.'">
-				<input type="hidden" name="task" value="unlike">
-				<input type="submit">
-			</form>
-		';
+		/* if ($no_of_likes > 0) {
+			$new_output .= '<div>';
+			$new_output .= 'Number of likes ';
+			$new_output .= $no_of_likes;
+			$new_output .= '</div>';
+		} */
+
+		$new_output .= '</div>';
+
+		return $new_output;
+	}
+
+	/**
+	* Br_likes filter to modify html
+	* called via apply_filters('brlikestotal_filter');
+	*/
+	public function brlikestotal_filter($id) {
+		$new_output = '';
+		$no_of_likes = $this->get_number_likes($id);
 
 		if ($no_of_likes > 0) {
-			$new_output .= '<div>';
+			$new_output .= '<div id="br-likes-total">';
 			$new_output .= 'Number of likes ';
 			$new_output .= $no_of_likes;
 			$new_output .= '</div>';

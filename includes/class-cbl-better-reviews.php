@@ -192,8 +192,14 @@ class Cbl_Better_Reviews {
 		// Add shortcode
 		add_shortcode('brlikes', array($plugin_public, 'brlikes_shortcode'));
 
+		// Add total likes shortcode
+		add_shortcode('brlikestotal', array($plugin_public, 'brlikestotal_shortcode'));
+
 		// Add filter to shortcode
 		add_filter('brlikes_filter', array($plugin_public, 'brlikes_filter'), 10);
+
+		// Add filter to shortcode
+		add_filter('brlikestotal_filter', array($plugin_public, 'brlikestotal_filter'), 10);
 
 		// Define function to update likes
 		$this->loader->add_action( 'init', $plugin_public, 'brlikes_update', 10 );
