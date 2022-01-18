@@ -203,7 +203,7 @@ class Cbl_Better_Reviews_Public {
 	}
 
 	/**
-	* Br_likes get numer of likes
+	* Br_likes get number of likes
 	*/
 	public function get_number_likes($post_id) {
 		global $wpdb;
@@ -248,6 +248,7 @@ class Cbl_Better_Reviews_Public {
 		$average_rating = $this->get_average_rating($id);
 		$post_id = get_the_ID();
 		$post_type = get_post_type($post_id);
+		$post_title = get_the_title($post_id);
 		$section_name = $this->plugin_name. '_posts_settings';
 		$options = get_option($section_name);
 
@@ -257,49 +258,40 @@ class Cbl_Better_Reviews_Public {
 			// Get the settings for the postype
 			$options_type = $this->plugin_name.'_'.$post_type;
 			$option_settings = get_option($options_type);
+			$post_settings_section = $this->plugin_name.'_'.$post_type;
+			$post_settings = get_option($post_settings_section);
+			if (!empty($post_settings)) {
+				$post_subtypes = $post_settings['subtype'];
+			}
 
 		} else {
-			echo 'You cannot use this shortcode on this page';
+			echo 'You cannot use this shortcode on this type of post';
 		}
-
 
 		// This will return the html for the br_likes block
 		$new_output .= '<div>';
 		$new_output .= '
 
-			<h2>'.$option_settings['review_label'].'</h2>
-			<form name="" action="/" method="post">
-				<div style="margin-bottom:20px;">
-				<label>'.$option_settings['subtype_quality'].'</label>
+			<h2>Rate '.$post_title.'</h2>
+			<form name="" action="/" method="post">';
+
+		if (!empty($post_subtypes)) {
+
+			foreach($post_subtypes as $subtype_value) {
+				$new_output .= '<div style="margin-bottom:20px;">
+				<label>'.$subtype_value['page_subtype_name'].'</label>
+				<div>'.$subtype_value['page_subtype_text'].'</div>
 				<input type="hidden" name="post_id" value="'.$id.'">
 				<input type="hidden" name="task" value="rate">
-				<input type="text" name="quality_value" value="">
-				</div>
+				<input type="text" name="'.$subtype_value['page_subtype'].'" value="" placeholder="Add you rating here">
+				</div>';
+			}
 
-				<div style="margin-bottom:20px;">
-				<label>'.$option_settings['subtype_value'].'</label>
-				<input type="hidden" name="post_id" value="'.$id.'">
-				<input type="hidden" name="task" value="rate">
-				<input type="text" name="value_value" value="">
-				</div>
-
-				<div style="margin-bottom:20px;">
-				<label>'.$option_settings['subtype_taste'].'</label>
-				<input type="hidden" name="post_id" value="'.$id.'">
-				<input type="hidden" name="task" value="rate">
-				<input type="text" name="taste_value" value="">
-				</div>
-
-				<input type="submit">
-			</form>
-
-		';
-		if ($average_rating > 0) {
-			$new_output .= '<div>';
-			$new_output .= $option_settings['average_score_label'].'<br />';
-			$new_output .= $this->get_average_rating($id);
-			$new_output .= '</div>';
 		}
+
+		$new_output .= '<input type="submit">
+			</form>
+		';
 
 		$new_output .= '</div>';
 

@@ -48,13 +48,13 @@ function <?php echo $type; ?>_add_field() {
 	text2.setAttribute("type", "text");
 	text2.setAttribute("name", "<?php echo $section_name; ?>[subtype]["+total_text+"][<?php echo $type; ?>_subtype_name]");
 	text2.setAttribute("class", "<?php echo $type; ?>_input_text");
-	text2.setAttribute("placeholder", "Subtype");
+	text2.setAttribute("placeholder", "Label");
 
 	const text3 = document.createElement('input');
 	text3.setAttribute("type", "text");
 	text3.setAttribute("name", "<?php echo $section_name; ?>[subtype]["+total_text+"][<?php echo $type; ?>_subtype_text]");
 	text3.setAttribute("class", "<?php echo $type; ?>_input_text");
-	text3.setAttribute("placeholder", "Subtype");
+	text3.setAttribute("placeholder", "Description");
 
 	const button = document.createElement('BUTTON');
 	var button_text = document.createTextNode("Remove");
