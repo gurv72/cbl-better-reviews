@@ -123,18 +123,12 @@ class Cbl_Better_Reviews_Public {
 		// This will return the html for the br_likes block
   		$new_output .= '<div>';
 		$new_output .= '
-			<label>Like the post here</label>
+			<label id="cbl-like-text">Like the post.</label>
+			<label id="cbl-liked-text">You have liked this post.</label>
 			<input type="hidden" id="br-likes-postid" name="post_id" value="'.$id.'">
 			<button id="br-likes-likebutton" data-id="'.$id.'" data-task="like">Like</button>
 
 		';
-
-		/* if ($no_of_likes > 0) {
-			$new_output .= '<div>';
-			$new_output .= 'Number of likes ';
-			$new_output .= $no_of_likes;
-			$new_output .= '</div>';
-		} */
 
 		$new_output .= '</div>';
 
